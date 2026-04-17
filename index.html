@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小红书发布管理器 Pro | 跨境娜娜</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #fff5f5 0%, #fff0f0 50%, #fff8f0 100%);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon {
+      background: linear-gradient(135deg, #ff6b8a, #ff4757);
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 24px;
+    }
+    .logo-text h1 { font-size: 28px; color: #333; font-weight: 700; }
+    .logo-text p { font-size: 13px; color: #888; margin-top: 4px; }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #ff6b8a, #ff4757);
+      color: white;
+    }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(255,71,87,0.4); transform: translateY(-2px); }
+    .btn-secondary { background: #f5f5f5; color: #666; }
+    .btn-secondary:hover { background: #eee; }
+    .btn-icon {
+      width: 40px; height: 40px;
+      padding: 0;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-blue { background: #3b82f6; color: white; }
+    .btn-red { background: #ef4444; color: white; }
+    .btn-green { background: #22c55e; color: white; }
+    .tabs { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .tab {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      background: #f5f5f5;
+      color: #666;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, #ff6b8a, #ff4757);
+      color: white;
+      box-shadow: 0 4px 12px rgba(255,71,87,0.3);
+    }
+    .tab:hover:not(.active) { background: #eee; }
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      background: linear-gradient(135deg, #fff, #fafafa);
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: 1px solid #f0f0f0;
+    }
+    .stat-item span { color: #888; font-size: 13px; }
+    .stat-item strong { color: #333; font-size: 24px; margin-left: 8px; }
+    .form-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .form-card h2 { font-size: 20px; color: #333; margin-bottom: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="date"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus { outline: none; border-color: #ff6b8a; }
+    .editor-container { border: 2px solid #eee; border-radius: 12px; overflow: hidden; }
+    .editor-toolbar {
+      background: #fafafa;
+      padding: 10px;
+      display: flex;
+      gap: 6px;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+    }
+    .toolbar-btn {
+      width: 36px; height: 36px;
+      border: none;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .toolbar-btn:hover { background: #ff6b8a; color: white; }
+    .editor-content {
+      min-height: 200px;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.8;
+      outline: none;
+    }
+    .editor-content:empty:before {
+      content: attr(data-placeholder);
+      color: #bbb;
+    }
+    .upload-area {
+      border: 2px dashed #ddd;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .upload-area:hover { border-color: #ff6b8a; background: #fff8f8; }
+    .upload-area p { color: #888; font-size: 14px; }
+    .image-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .image-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 1;
+    }
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-item .remove-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 28px; height: 28px;
+      background: rgba(239,68,68,0.9);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 16px;
+    }
+    .image-item:hover .remove-btn { opacity: 1; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+    .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+    .posts-list { display: flex; flex-direction: column; gap: 20px; }
+    .post-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    .post-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+    .post-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+    .post-title { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .post-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .post-date { color: #888; font-size: 13px; display: flex; align-items: center; gap: 4px; }
+    .post-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-today { background: linear-gradient(135deg, #ff6b8a, #ff4757); color: white; }
+    .badge-images { background: #e0f2fe; color: #0284c7; }
+    .post-status {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .post-actions { display: flex; gap: 8px; }
+    .post-content {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      line-height: 1.8;
+      color: #444;
+    }
+    .post-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .post-images img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .post-images img:hover { transform: scale(1.02); }
+    .post-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: linear-gradient(135deg, #fff0f3, #ffe4e8);
+      color: #e11d48;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .empty-state {
+      background: white;
+      border-radius: 20px;
+      padding: 80px 40px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .empty-state p { color: #888; font-size: 16px; }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #333;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 1000;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
+    }
+    .modal-content h3 { font-size: 18px; margin-bottom: 16px; }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-size: 13px;
+    }
+    .footer a { color: #ff6b8a; text-decoration: none; }
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .header { padding: 16px; }
+      .logo-text h1 { font-size: 20px; }
+      .post-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-top">
+        <div class="logo">
+          <div class="logo-icon">📕</div>
+          <div class="logo-text">
+            <h1>小红书发布管理器 Pro</h1>
+            <p>富文本编辑 · 图片上传 · 本地永久保存 · By 跨境娜娜</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="showAddForm()">
+          <span>＋</span> 添加文章
+        </button>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-view="today" onclick="switchView('today')">今日发布 <span id="todayCount"></span></button>
+        <button class="tab" data-view="upcoming" onclick="switchView('upcoming')">即将发布 <span id="upcomingCount"></span></button>
+        <button class="tab" data-view="all" onclick="switchView('all')">全部文章 <span id="allCount"></span></button>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-item"><span>📝 草稿</span><strong id="draftCount">0</strong></div>
+        <div class="stat-item"><span>📅 待发布</span><strong id="scheduledCount">0</strong></div>
+        <div class="stat-item"><span>✅ 已发布</span><strong id="publishedCount">0</strong></div>
+      </div>
+    </div>
+    <div class="form-card" id="formCard" style="display: none;">
+      <h2 id="formTitle">添加新文章</h2>
+      <input type="hidden" id="editingId">
+      <div class="form-group">
+        <label>标题</label>
+        <input type="text" id="postTitle" placeholder="输入文章标题">
+      </div>
+      <div class="form-group">
+        <label>内容（富文本编辑）</label>
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <button class="toolbar-btn" onclick="execCmd('bold')" title="加粗"><b>B</b></button>
+            <button class="toolbar-btn" onclick="execCmd('italic')" title="斜体"><i>I</i></button>
+            <button class="toolbar-btn" onclick="execCmd('underline')" title="下划线"><u>U</u></button>
+            <button class="toolbar-btn" onclick="execCmd('strikeThrough')" title="删除线"><s>S</s></button>
+            <button class="toolbar-btn" onclick="execCmd('insertUnorderedList')" title="列表">•</button>
+            <button class="toolbar-btn" onclick="execCmd('formatBlock', 'h2')" title="标题">H</button>
+            <button class="toolbar-btn" onclick="execCmd('removeFormat')" title="清除格式">✕</button>
+          </div>
+          <div class="editor-content" id="postContent" contenteditable="true" data-placeholder="开始输入内容，选中文字后可以加粗、斜体等..."></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>上传图片（可多选）</label>
+        <input type="file" id="imageInput" accept="image/*" multiple style="display:none" onchange="handleImageUpload(event)">
+        <div class="upload-area" onclick="document.getElementById('imageInput').click()">
+          <p>📷 点击选择图片或拖拽到此处</p>
+        </div>
+        <div class="image-preview" id="imagePreview"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>发布日期</label>
+          <input type="date" id="postDate">
+        </div>
+        <div class="form-group">
+          <label>标签（逗号分隔）</label>
+          <input type="text" id="postTags" placeholder="生活方式,美食,旅行">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="hideForm()">取消</button>
+        <button class="btn btn-primary" onclick="savePost()">💾 保存文章</button>
+      </div>
+    </div>
+    <div class="posts-list" id="postsList"></div>
+    <div class="footer">
+      <p>Made with ❤️ by <a href="https://github.com/simone831122" target="_blank">跨境娜娜 Simone</a></p>
+      <p style="margin-top:8px;">数据保存在浏览器本地，清除浏览器缓存会丢失数据</p>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="modal-overlay" id="deleteModal">
+    <div class="modal-content">
+      <h3>确认删除</h3>
+      <p>确定要删除这篇文章吗？此操作无法撤销。</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+        <button class="btn btn-red" onclick="confirmDelete()">确认删除</button>
+      </div>
+    </div>
+  </div>
+<script>
+const STORAGE_KEY = 'xhs_posts_pro';
+let posts = [];
+let currentView = 'today';
+let tempImages = [];
+let deleteTargetId = null;
+
+function init() {
+  loadPosts();
+  setDefaultDate();
+  renderPosts();
+  updateStats();
+  setupDragDrop();
+}
+
+function loadPosts() {
+  const data = localStorage.getItem(STORAGE_KEY);
+  posts = data ? JSON.parse(data) : [];
+}
+
+function savePosts() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+}
+
+function setDefaultDate() {
+  document.getElementById('postDate').value = new Date().toISOString().split('T')[0];
+}
+
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-view="${view}"]`).classList.add('active');
+  renderPosts();
+}
+
+function getFilteredPosts() {
+  const today = new Date().toISOString().split('T')[0];
+  if (currentView === 'today') return posts.filter(p => p.date === today);
+  if (currentView === 'upcoming') return posts.filter(p => p.date > today);
+  return [...posts].sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+function updateStats() {
+  const today = new Date().toISOString().split('T')[0];
+  const todayPosts = posts.filter(p => p.date === today);
+  const upcomingPosts = posts.filter(p => p.date > today);
+  document.getElementById('todayCount').textContent = todayPosts.length ? `(${todayPosts.length})` : '';
+  document.getElementById('upcomingCount').textContent = upcomingPosts.length ? `(${upcomingPosts.length})` : '';
+  document.getElementById('allCount').textContent = `(${posts.length})`;
+  document.getElementById('draftCount').textContent = posts.filter(p => p.status === 'draft').length;
+  document.getElementById('scheduledCount').textContent = posts.filter(p => p.status === 'scheduled').length;
+  document.getElementById('publishedCount').textContent = posts.filter(p => p.status === 'published').length;
+}
+
+function showAddForm() {
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('formTitle').textContent = '添加新文章';
+  document.getElementById('editingId').value = '';
+  document.getElementById('postTitle').value = '';
+  document.getElementById('postContent').innerHTML = '';
+  document.getElementById('postTags').value = '';
+  setDefaultDate();
+  tempImages = [];
+  renderImagePreview();
+  document.getElementById('postTitle').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showEditForm(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('formTitle').textContent = '编辑文章';
+  document.getElementById('editingId').value = id;
+  document.getElementById('postTitle').value = post.title;
+  document.getElementById('postContent').innerHTML = post.content;
+  document.getElementById('postDate').value = post.date;
+  document.getElementById('postTags').value = post.tags || '';
+  tempImages = post.images || [];
+  renderImagePreview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideForm() {
+  document.getElementById('formCard').style.display = 'none';
+  tempImages = [];
+}
+
+function savePost() {
+  const title = document.getElementById('postTitle').value.trim();
+  const content = document.getElementById('postContent').innerHTML.trim();
+  const date = document.getElementById('postDate').value;
+  const tags = document.getElementById('postTags').value.trim();
+  const editingId = document.getElementById('editingId').value;
+  if (!title) { showToast('请输入标题'); return; }
+  if (!content || content === '<br>') { showToast('请输入内容'); return; }
+  if (!date) { showToast('请选择日期'); return; }
+  if (editingId) {
+    const index = posts.findIndex(p => p.id === editingId);
+    if (index !== -1) {
+      posts[index] = { ...posts[index], title, content, date, tags, images: tempImages, updatedAt: new Date().toISOString() };
+      showToast('文章已更新！');
+    }
+  } else {
+    posts.push({
+      id: Date.now().toString(),
+      title, content, date, tags,
+      images: tempImages,
+      status: 'draft',
+      createdAt: new Date().toISOString()
+    });
+    showToast('文章已保存！');
+  }
+  savePosts();
+  hideForm();
+  renderPosts();
+  updateStats();
+}
+
+function handleImageUpload(e) {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        tempImages.push(event.target.result);
+        renderImagePreview();
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  e.target.value = '';
+}
+
+function removeImage(index) {
+  tempImages.splice(index, 1);
+  renderImagePreview();
+}
+
+function renderImagePreview() {
+  const container = document.getElementById('imagePreview');
+  container.innerHTML = tempImages.map((img, i) => `
+    <div class="image-item">
+      <img src="${img}" alt="预览${i+1}">
+      <button class="remove-btn" onclick="removeImage(${i})">×</button>
+    </div>
+  `).join('');
+}
+
+function setupDragDrop() {
+  const uploadArea = document.querySelector('.upload-area');
+  if (!uploadArea) return;
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+    uploadArea.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); });
+  });
+  uploadArea.addEventListener('drop', e => {
+    const files = Array.from(e.dataTransfer.files);
+    files.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          tempImages.push(event.target.result);
+          renderImagePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  });
+}
+
+function updateStatus(id, status) {
+  const post = posts.find(p => p.id === id);
+  if (post) {
+    post.status = status;
+    savePosts();
+    updateStats();
+    showToast('状态已更新');
+  }
+}
+
+function copyPost(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post) return;
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = post.content;
+  const plainText = tempDiv.textContent || tempDiv.innerText;
+  const tags = post.tags ? post.tags.split(',').map(t => `#${t.trim()}`).join(' ') : '';
+  const text = `${post.title}\n\n${plainText}\n\n${tags}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(post.images?.length ? `文字已复制！请手动保存 ${post.images.length} 张图片` : '内容已复制到剪贴板！');
+  });
+}
+
+function downloadImages(id) {
+  const post = posts.find(p => p.id === id);
+  if (!post?.images?.length) return;
+  post.images.forEach((img, i) => {
+    const link = document.createElement('a');
+    link.href = img;
+    link.download = `${post.title}-图片${i+1}.jpg`;
+    link.click();
+  });
+  showToast(`正在下载 ${post.images.length} 张图片...`);
+}
+
+function showDeleteConfirm(id) {
+  deleteTargetId = id;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('show');
+  deleteTargetId = null;
+}
+
+function confirmDelete() {
+  if (deleteTargetId) {
+    posts = posts.filter(p => p.id !== deleteTargetId);
+    savePosts();
+    renderPosts();
+    updateStats();
+    showToast('文章已删除');
+  }
+  closeDeleteModal();
+}
+
+function execCmd(cmd, value = null) {
+  document.execCommand(cmd, false, value);
+  document.getElementById('postContent').focus();
+}
+
+function renderPosts() {
+  const container = document.getElementById('postsList');
+  const filteredPosts = getFilteredPosts();
+  if (filteredPosts.length === 0) {
+    const messages = {
+      today: '今天还没有安排发布的文章',
+      upcoming: '暂无即将发布的文章',
+      all: '还没有添加任何文章，点击"添加文章"开始吧！'
+    };
+    container.innerHTML = `<div class="empty-state"><p>📅 ${messages[currentView]}</p></div>`;
+    return;
+  }
+  const today = new Date().toISOString().split('T')[0];
+  container.innerHTML = filteredPosts.map(post => `
+    <div class="post-card">
+      <div class="post-header">
+        <div>
+          <div class="post-title">${escapeHtml(post.title)}</div>
+          <div class="post-meta">
+            <span class="post-date">📅 ${formatDate(post.date)}</span>
+            ${post.date === today ? '<span class="post-badge badge-today">今日发布</span>' : ''}
+            ${post.images?.length ? `<span class="post-badge badge-images">📷 ${post.images.length} 张图片</span>` : ''}
+            <select class="post-status" onchange="updateStatus('${post.id}', this.value)">
+              <option value="draft" ${post.status === 'draft' ? 'selected' : ''}>📝 草稿</option>
+              <option value="scheduled" ${post.status === 'scheduled' ? 'selected' : ''}>📅 待发布</option>
+              <option value="published" ${post.status === 'published' ? 'selected' : ''}>✅ 已发布</option>
+            </select>
+          </div>
+        </div>
+        <div class="post-actions">
+          ${post.images?.length ? `<button class="btn btn-icon btn-blue" onclick="downloadImages('${post.id}')" title="下载图片">⬇️</button>` : ''}
+          <button class="btn btn-icon btn-primary" onclick="copyPost('${post.id}')" title="复制内容">📋</button>
+          <button class="btn btn-icon btn-green" onclick="showEditForm('${post.id}')" title="编辑">✏️</button>
+          <button class="btn btn-icon btn-red" onclick="showDeleteConfirm('${post.id}')" title="删除">🗑️</button>
+        </div>
+      </div>
+      <div class="post-content">${post.content}</div>
+      ${post.images?.length ? `
+        <div class="post-images">
+          ${post.images.map((img, i) => `<img src="${img}" alt="图片${i+1}" onclick="window.open('${img}', '_blank')">`).join('')}
+        </div>
+      ` : ''}
+      ${post.tags ? `
+        <div class="post-tags">
+          ${post.tags.split(',').map(t => `<span class="tag">#${t.trim()}</span>`).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+init();
+</script>
+</body>
+</html>
